@@ -35,7 +35,7 @@ from mmap import ACCESS_READ, mmap
 
 # Global Variables
 version_number = "0.9"
-website = "https://gist.github.com/chriswcohen/1eda690e710f2de5cc62"
+website = "https://gist.github.com/chriswcohen/7e28c95ba7354a986c34"
 donation_address = "1BnvsBZcyVxF8L8HboUcDc2mAUu9K2qsTe"
 author = "Chris COHEN (chris.w.cohen@gmail.com)"
 
