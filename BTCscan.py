@@ -24,7 +24,7 @@
 # I would be very interesting in hearing from you if you find this program of use. 
 # Email:     chris.w.cohen@gmail.com
 # Donations: 1BnvsBZcyVxF8L8HboUcDc2mAUu9K2qsTe
-# Accompanying Article: http://articles.forensicfocus.com/2015/01/15/forensics-bitcoin/
+# Accompanying Article: https://articles.forensicfocus.com/2015/01/16/forensics-bitcoin/
 
 import re
 import sys
