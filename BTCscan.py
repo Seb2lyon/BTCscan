@@ -26,6 +26,8 @@
 # Donations: 1BnvsBZcyVxF8L8HboUcDc2mAUu9K2qsTe
 # Accompanying Article: https://articles.forensicfocus.com/2015/01/16/forensics-bitcoin/
 
+# (Update 31/03/18) A recent version of Python 3 causes the script to fail, the script works correctly on Python 3.5.3.
+
 import re
 import sys
 import os

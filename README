@@ -7,6 +7,8 @@ Accompanying Article: https://articles.forensicfocus.com/2015/01/16/forensics-bi
 Searches a file or all files within a folder including subfolders for Bitcoin
 related Base58Check encoded strings.
 
+(Update 31/03/18) A recent version of Python 3 causes the script to fail, the script works correctly on Python 3.5.3.
+
 
 BTCscan.py [-i/--input=][drive:][path][filename] [args]
 
