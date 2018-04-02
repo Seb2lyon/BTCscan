@@ -26,7 +26,8 @@
 # Donations: 1BnvsBZcyVxF8L8HboUcDc2mAUu9K2qsTe
 # Accompanying Article: https://articles.forensicfocus.com/2015/01/16/forensics-bitcoin/
 
-# (Update 31/03/18) A recent version of Python 3 causes the script to fail, the script works correctly on Python 3.5.3.
+# (Update 31/03/18) Feedback has indicated that certain versions of Python 3 causes the script to fail.
+# BTCscan.py has been confirmed to work under Python 3.5.3 and 3.6.1
 
 import re
 import sys
