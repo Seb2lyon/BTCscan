@@ -1,4 +1,5 @@
 #    Copyright 2014 Chris Cohen
+#    Forked    2022 Seb2lyon
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -28,6 +29,9 @@
 
 # (Update 31/03/18) Feedback has indicated that certain versions of Python 3 causes the script to fail.
 # BTCscan.py has been confirmed to work under Python 3.5.3, 3.6.1 and 3.7.
+#
+# (Update 16/06/22) Fork by Seb2lyon - Scan also the SegWit adresses (P2WPKH and P2TR) without Bech32 check (must cause false positive).
+#
 
 import re
 import sys
@@ -54,7 +58,9 @@ nonunicode_mode = False
 
 # Bitcoin (Bitcoin pubkey hash) 26-35 Base58Check chars, beginning with the number 1 
 # Pay to script hash (P2SH) 26-35 Base58Check chars, beginning with the number 3
-# Unicode Bitcoin or P2SH address
+# Segwit v0 or P2WPKH (Pay To Witness Public Key Hash) 42 Bech32 chars, beginning with 'bc1q'
+# Segwit v1 or P2TR (Pay-to-Taproot) 62 Bech32m chars, beginning with 'bc1p'
+# Unicode Bitcoin, P2SH, P2WPKH and P2TR addresses
 # BIP38 Encrypted Private Key - 58 characters always starting with '6P'
 # Unicode BIP38 Encrypted Private Key - 58 characters always starting with '6P'
 # Private key - uncompressed public keys - 51 characters always starting with the number 5 
@@ -63,6 +69,7 @@ nonunicode_mode = False
 # BIP32 HD wallet public node key - 111-112 Base58Check characters starting with xpub
 
 quick_group = [True, True, 
+               True, True,
                True, True, 
                True, True, 
                True, True, 
@@ -74,6 +81,8 @@ patterns_group = [b'1[a-km-zA-HJ-NP-Z1-9]{25,34}',
                   b'1\x00([a-km-zA-HJ-NP-Z1-9]\x00){25,34}',
                   b'3[a-km-zA-HJ-NP-Z1-9]{25,34}',
                   b'3\x00([a-km-zA-HJ-NP-Z1-9]\x00){25,34}',
+                  b'bc1[qp][a-z0-9]{38,58}',
+                  b'b\x00c\x001\x00[qp]\x00([a-z0-9]\x00){38,58}',
                   b'6P[a-km-zA-HJ-NP-Z1-9]{56}',
                   b'6\x00P\x00([a-km-zA-HJ-NP-Z1-9]\x00){56}',
                   b'5[a-km-zA-HJ-NP-Z1-9]{50}',
@@ -85,12 +94,14 @@ patterns_group = [b'1[a-km-zA-HJ-NP-Z1-9]{25,34}',
                   b'xpub[a-km-zA-HJ-NP-Z1-9]{107,108}',  
                   b'x\x00p\x00u\x00b\x00([a-km-zA-HJ-NP-Z1-9]\x00){107,108}']
 
-byte_length_group = [25, 25, 25, 25, 43, 43, 37, 37, 38, 38, 82, 82, 82, 82]
+byte_length_group = [25, 25, 25, 25, 42, 42, 43, 43, 37, 37, 38, 38, 82, 82, 82, 82]
 
 names_group = ['Bitcoin address', 
                'Bitcoin address',
                'Bitcoin P2SH',
                'Bitcoin P2SH',
+               'Bitcoin SegWit',
+               'Bitcoin SegWit',
                'BIP38 Encrypted Private Key',
                'BIP38 Encrypted Private Key',
                'WIF Private key, uncompressed public keys',
@@ -104,7 +115,8 @@ names_group = ['Bitcoin address',
                
 unicode_group = [False, True, 
                  False, True, 
-                 False, True, 
+                 False, True,
+                 False, True,
                  False, True, 
                  False, True,
                  False, True,
@@ -113,7 +125,10 @@ unicode_group = [False, True,
 def process_grep_match(match, byte_length):
     "Performs actions on the found addresses"
     try:
-        result = check_base58check(match, byte_length)
+        if str(match[:3]) == "bc1":
+            result = True
+        else:
+            result = check_base58check(match, byte_length)
     except OverflowError as e:
         return False
     except ValueError as e:
@@ -223,7 +238,7 @@ def usage():
     info()
     sys.stdout.write("\n")
     sys.stdout.write("Searches a file or all files within a folder including subfolders for Bitcoin\n")
-    sys.stdout.write("related Base58Check encoded strings.\n")
+    sys.stdout.write("related encoded strings.\n")
     sys.stdout.write("\n")
     sys.stdout.write(os.path.basename(__file__) + " [-i/--input=][drive:][path][filename] [args]\n")
     sys.stdout.write("\n")
@@ -309,7 +324,7 @@ if __name__ == "__main__":
     # clear last printed "Checking for... " entry
     sys.stdout.write("\r                                                                         ")
     sys.stdout.write("\n" + str(files_examined) + " files examined\n")
-    sys.stdout.write(str(base58_passed_found) + " Base58Check matches found\n")
+    sys.stdout.write(str(base58_passed_found) + " matches found\n")
     sys.stdout.write(str(total_file_size) + " bytes examined\n")
     sys.stdout.write(str('%.2f'%duration) + " seconds processing time\n")
 
